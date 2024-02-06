@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Table } from "react-bootstrap";
-import axios from "axios";
 
 const ReceiptList = () => {
 	const [receipts, setReceipts] = useState([]);
 
-	useEffect(() => {
-		axios
-			.get("api/receipts")
-			.then((res) => setReceipts(res.data))
-			.catch((err) => console.log(err));
-	}, []);
+	// useEffect(() => {
+	// 	axios
+	// 		.get("api/receipts")
+	// 		.then((res) => setReceipts(res.data))
+	// 		.catch((err) => console.log(err));
+	// }, []);
 
 	const addReceipt = () => {
 		// code for opening CRUD interface for creating new receipt record
@@ -77,7 +76,7 @@ const ReceiptList = () => {
 				<div>
 					<Button variant="success" onClick={addReceipt}>
 						Add Receipt
-					</Button>{" "}
+					</Button>
 					<Button variant="secondary" onClick={printReceipts}>
 						Print
 					</Button>
