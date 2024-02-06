@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchReceipts } from "../../redux/slices/receiptSlice";
 
 const ReceiptList = () => {
-	const [receipts, setReceipts] = useState([]);
+	const dispatch = useDispatch();
+	const { status, loading, receipts } = useSelector((store) => store.receipts);
 
-	// useEffect(() => {
-	// 	axios
-	// 		.get("api/receipts")
-	// 		.then((res) => setReceipts(res.data))
-	// 		.catch((err) => console.log(err));
-	// }, []);
+	useEffect(() => {
+		dispatch(fetchReceipts());
+	}, []);
 
 	const addReceipt = () => {
 		// code for opening CRUD interface for creating new receipt record
@@ -28,7 +28,7 @@ const ReceiptList = () => {
 	};
 
 	return (
-		<div>
+		<div className="container vh-100">
 			<Table striped bordered hover>
 				<thead>
 					<tr>
@@ -42,35 +42,47 @@ const ReceiptList = () => {
 						<th>Actions</th>
 					</tr>
 				</thead>
-				<tbody>
-					{receipts.map((receipt) => (
-						<tr key={receipt.id}>
-							<td>{receipt.receiptNo}</td>
-							<td>{receipt.receiptDate}</td>
-							<td>{receipt.personName}</td>
-							<td>{receipt.totalQty}</td>
-							<td>{receipt.add}</td>
-							<td>{receipt.netAmount}</td>
-							<td>{receipt.remarks}</td>
-							<td>
-								<Button
-									variant="primary"
-									size="sm"
-									onClick={() => editReceipt(receipt.id)}
-								>
-									Edit
-								</Button>{" "}
-								<Button
-									variant="danger"
-									size="sm"
-									onClick={() => deleteReceipt(receipt.id)}
-								>
-									Delete
-								</Button>
-							</td>
-						</tr>
-					))}
-				</tbody>
+				{loading ? (
+					status === "rejected" ? (
+						<div className="text-danger">
+							Failed To load the data please try later
+						</div>
+					) : (
+						<div>Loading...</div>
+					)
+				) : (
+					<>
+						<tbody>
+							{receipts.map((receipt) => (
+								<tr key={receipt.id}>
+									<td>{receipt.receiptNo}</td>
+									<td>{receipt.receiptDate}</td>
+									<td>{receipt.personName}</td>
+									<td>{receipt.totalQty}</td>
+									<td>{receipt.add}</td>
+									<td>{receipt.netAmount}</td>
+									<td>{receipt.remarks}</td>
+									<td>
+										<Button
+											variant="primary"
+											size="sm"
+											onClick={() => editReceipt(receipt.id)}
+										>
+											Edit
+										</Button>{" "}
+										<Button
+											variant="danger"
+											size="sm"
+											onClick={() => deleteReceipt(receipt.id)}
+										>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>{" "}
+					</>
+				)}
 			</Table>
 			<div className="d-flex justify-content-between align-items-center">
 				<div>
