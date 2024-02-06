@@ -20,7 +20,7 @@ function Login() {
 					password,
 				})
 			);
-			navigate("/to-correct-site");
+			navigate("/");
 		},
 		[username, password, dispatch, navigate]
 	);
