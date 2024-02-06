@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BASE_URL } from "../../utils/api";
+import { Axios, BASE_URL } from "../../utils/api";
 
 const initialState = {
 	receipts: [],
@@ -11,16 +11,15 @@ const initialState = {
 export const fetchReceipts = createAsyncThunk(
 	"receipts/fetchReceipts",
 	async (payload) => {
-		const response = await axios.get(
-			`${BASE_URL}BillManagement/Bill/GetList/`,
-			{
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-				},
-			}
-		);
+		try {
+			const response = await Axios.get(
+				`${BASE_URL}BillManagement/Bill/GetList/`
+			);
 
-		return response.data;
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
 	}
 );
 
