@@ -1,20 +1,32 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { Axios, BASE_URL } from "../../utils/api";
+import { Axios } from "../../utils/api";
 
 const initialState = {
 	receipts: [],
+	receipt: null,
 	status: "idle",
 	loading: false,
+	receiptLoading: false,
 };
 
 export const fetchReceipts = createAsyncThunk(
 	"receipts/fetchReceipts",
-	async (payload) => {
+	async () => {
 		try {
-			const response = await Axios.get(
-				`${BASE_URL}BillManagement/Bill/GetList/`
-			);
+			const response = await Axios.get("BillManagement/Bill/GetList/");
+
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
+export const getReceiptById = createAsyncThunk(
+	"receipts/fetchReceiptById",
+	async (id) => {
+		try {
+			const response = await Axios.get(`BillManagement/Bill/GetModel/${id}`);
 
 			return response.data;
 		} catch (error) {
@@ -45,6 +57,23 @@ const receiptSlice = createSlice({
 			state.loading = false;
 			state.status = "fulfilled";
 			state.receipts = action.payload;
+		});
+
+		// get bill by id
+		builder.addCase(getReceiptById.pending, (state, action) => {
+			state.receiptLoading = true;
+			state.status = "loading";
+			state.receipt = null;
+		});
+		builder.addCase(getReceiptById.rejected, (state, action) => {
+			state.receiptLoading = false;
+			state.status = "rejected";
+			state.receipt = null;
+		});
+		builder.addCase(getReceiptById.fulfilled, (state, action) => {
+			state.receiptLoading = false;
+			state.status = "fulfilled";
+			state.receipt = action.payload;
 		});
 	},
 });

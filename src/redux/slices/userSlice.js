@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { Axios, BASE_URL } from "../../utils/api";
+import { Axios } from "../../utils/api";
 
 const initialState = {
 	user: null,
@@ -13,7 +12,7 @@ export const authenticateUser = createAsyncThunk(
 	async (payload) => {
 		try {
 			const response = await Axios.post(
-				`${BASE_URL}UserManagement/AuthenticateUser?UserName=${payload.username}&Password=${payload.password}`
+				`UserManagement/AuthenticateUser?UserName=${payload.username}&Password=${payload.password}`
 			);
 			return response.data;
 		} catch (error) {
