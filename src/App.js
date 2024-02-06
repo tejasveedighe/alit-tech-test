@@ -10,7 +10,7 @@ function App() {
 		if (!localStorage.getItem("authToken")) {
 			navigate("/login");
 		}
-	}, [navigate]);
+	}, []);
 	return (
 		<Routes>
 			<Route exact path="/login" element={<Login />} />
