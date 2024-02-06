@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { authenticateUser } from "../../redux/slices/userSlice";
 
 function Login() {
-	const [email, setEmail] = useState("");
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const state = useSelector((store) => store.user);
+
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
-	};
+	const handleSubmit = useCallback(
+		(event) => {
+			event.preventDefault();
+			dispatch(
+				authenticateUser({
+					username,
+					password,
+				})
+			);
+			navigate("/to-correct-site");
+		},
+		[username, password, dispatch, navigate]
+	);
 
 	return (
 		<main className="container d-flex flex-column align-items-center justify-content-center vh-100">
 			<h1 className="mb-5">Login</h1>
 			<form onSubmit={handleSubmit} className="">
 				<div className="form-group">
-					<label htmlFor="email">Email address</label>
+					<label htmlFor="username">Email address</label>
 					<input
-						type="email"
+						type="text"
 						className="form-control"
-						id="email"
-						aria-describedby="emailHelp"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						id="username"
+						aria-describedby="user-login-name"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+						required
 					/>
-					<small id="emailHelp" className="form-text text-muted">
+					<small id="user-login-name" className="form-text text-muted">
 						We'll never share your email with anyone else.
 					</small>
 				</div>
@@ -34,11 +52,17 @@ function Login() {
 						id="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+						required
 					/>
+				</div>
+				<div className="text-danger">
+					{state.loading === false && state.status === "rejected"
+						? "Incorrect password, please try again"
+						: ""}
 				</div>
 				<div className="d-flex align-items-center justify-content-between mt-2">
 					<button type="submit" className="btn btn-primary">
-						Submit
+						{state.loading ? "loading..." : "Submit"}
 					</button>
 					<a href="#" className="forgot-password mt-3">
 						Forgot Password?
