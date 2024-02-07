@@ -11,30 +11,31 @@ const ReceiptList = () => {
 	const dispatch = useDispatch();
 	const { status, loading, receipts } = useSelector((store) => store.receipts);
 	const tableRef = useRef();
+	const [selectedReceiptId, setSelectedReceiptId] = useState(null);
 
 	useEffect(() => {
 		dispatch(fetchReceipts());
 	}, []);
 
 	const addReceipt = () => {
-		// code for opening CRUD interface for creating new receipt record
+		setSelectedReceiptId(null);
+		setShow(true);
 	};
 
-	const [selectedReceiptId, setSelectedReceiptId] = useState(null);
 	const editReceipt = (id) => {
 		setSelectedReceiptId(id);
 		setShow(true);
 	};
 
-	const deleteReceipt = (id) => {
-		// code for deleting receipt record with given id
-	};
+	const deleteReceipt = (id) => {};
 
 	const refreshReceipts = useCallback(() => {
 		dispatch(fetchReceipts());
 	}, [dispatch]);
 
 	const [show, setShow] = useState(false);
+
+	if (loading) return <div>Loading...</div>;
 
 	return (
 		<>
@@ -63,57 +64,45 @@ const ReceiptList = () => {
 						<thead>
 							<tr>
 								<th>Sr No.</th>
-								<th>Receipt No.</th>
-								<th>Receipt Date</th>
-								<th>Person Name</th>
-								<th>Total Qty</th>
+								<th>Bill No.</th>
+								<th>Bill Date</th>
+								<th>Customer Name</th>
 								<th>Net Amount</th>
 								<th>Remarks</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
-						{loading ? (
-							status === "rejected" ? (
-								<div className="text-danger">
-									Failed To load the data please try later
-								</div>
-							) : (
-								<div>Loading...</div>
-							)
-						) : (
-							<tbody>
-								{receipts.map((receipt, index) => (
-									<tr key={crypto.randomUUID()}>
-										<td>{index + 1}</td>
-										<td>{receipt.billNo}</td>
-										<td>{new Date(receipt.billDate).toLocaleDateString()}</td>
-										<td>{receipt.customerName}</td>
-										<td>{receipt.totalQty}</td>
-										<td>{receipt.netAmount}</td>
-										<td>{receipt.remarks}</td>
-										<td>
-											<Button
-												variant="success"
-												size="sm"
-												onClick={() => editReceipt(receipt.billID)}
-											>
-												Edit
-											</Button>
-											<Button
-												variant="danger"
-												size="sm"
-												onClick={() => deleteReceipt(receipt.id)}
-											>
-												Delete
-											</Button>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						)}
+						<tbody>
+							{receipts?.map((receipt, index) => (
+								<tr key={crypto.randomUUID()}>
+									<td>{index + 1}</td>
+									<td>{receipt.billNo}</td>
+									<td>{new Date(receipt.billDate).toLocaleDateString()}</td>
+									<td>{receipt.customerName}</td>
+									<td>{receipt.netAmount}</td>
+									<td>{receipt.remarks}</td>
+									<td>
+										<Button
+											variant="success"
+											size="sm"
+											onClick={() => editReceipt(receipt.billID)}
+										>
+											Edit
+										</Button>
+										<Button
+											variant="danger"
+											size="sm"
+											onClick={() => deleteReceipt(receipt.id)}
+										>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
+						</tbody>
 					</Table>
 
-					<div className="float-end">Showing {receipts.length} records</div>
+					<div className="float-end">Showing {receipts?.length} records</div>
 				</section>
 			</main>
 			<ReceiptCRUD

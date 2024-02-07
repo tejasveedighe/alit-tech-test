@@ -44,6 +44,7 @@ const receiptSlice = createSlice({
 		},
 	},
 	extraReducers(builder) {
+		// get all bills
 		builder.addCase(fetchReceipts.pending, (state, action) => {
 			state.loading = true;
 			state.status = "loading";
@@ -78,5 +79,4 @@ const receiptSlice = createSlice({
 	},
 });
 
-const { setReceipts } = receiptSlice.actions;
 export default receiptSlice.reducer;

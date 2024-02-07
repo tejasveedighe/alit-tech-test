@@ -30,40 +30,42 @@ const ReceiptCRUD = ({ receiptId, show, setShow }) => {
 	};
 
 	useEffect(() => {
-		if (show) dispatch(getReceiptById(receiptId));
+		if (show && receiptId) dispatch(getReceiptById(receiptId));
 	}, [receiptId, show, dispatch]);
 
 	return (
 		<>
 			<Modal show={show} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>{receipt ? "Edit Receipt" : "Add Receipt"}</Modal.Title>
+					<Modal.Title>{receipt ? "Edit Bill" : "Add Bill"}</Modal.Title>
 				</Modal.Header>
 
 				{!receiptLoading ? (
 					status === "fulfilled" ? (
 						<Modal.Body>
-							<Form.Group>
-								<Form.Label>Receipt No.</Form.Label>
-								<Form.Control
-									type="text"
-									name="billNo"
-									value={receipt?.billNo}
-									onChange={handleChange}
-									disabled={receipt ? true : false}
-								/>
-							</Form.Group>
+							<div className="d-flex align-items-center justify-content-between">
+								<Form.Group>
+									<Form.Label>Bill No.</Form.Label>
+									<Form.Control
+										type="text"
+										name="billNo"
+										value={receipt?.billNo}
+										onChange={handleChange}
+										disabled={receipt ? true : false}
+									/>
+								</Form.Group>
 
-							<Form.Group>
-								<Form.Label>Receipt Date</Form.Label>
-								<Form.Control
-									type="date"
-									name="billDate"
-									// value={formData.billDate.toISOString().split("T")[0]}
-									value={receipt?.billDate}
-									onChange={handleChange}
-								/>
-							</Form.Group>
+								<Form.Group>
+									<Form.Label>Bill Date</Form.Label>
+									<Form.Control
+										type="date"
+										name="billDate"
+										// value={formData.billDate.toISOString().split("T")[0]}
+										value={receipt?.billDate}
+										onChange={handleChange}
+									/>
+								</Form.Group>
+							</div>
 
 							<Form.Group>
 								<Form.Label>Person Name</Form.Label>
@@ -71,16 +73,6 @@ const ReceiptCRUD = ({ receiptId, show, setShow }) => {
 									type="text"
 									name="customerName"
 									value={receipt?.customerName}
-									onChange={handleChange}
-								/>
-							</Form.Group>
-
-							<Form.Group>
-								<Form.Label>Total Qty</Form.Label>
-								<Form.Control
-									type="number"
-									name="totalQty"
-									value={receipt?.totalQty}
 									onChange={handleChange}
 								/>
 							</Form.Group>
@@ -94,22 +86,12 @@ const ReceiptCRUD = ({ receiptId, show, setShow }) => {
 									onChange={handleChange}
 								/>
 							</Form.Group>
-
-							<Form.Group>
-								<Form.Label>Remarks</Form.Label>
-								<Form.Control
-									type="text"
-									name="remarks"
-									value={receipt?.remarks}
-									onChange={handleChange}
-								/>
-							</Form.Group>
 						</Modal.Body>
 					) : (
-						<div>Loading....</div>
+						<div className="text-danger">Error, in fetching data</div>
 					)
 				) : (
-					<div className="text-danger">Error, in fetching data</div>
+					<div>Loading....</div>
 				)}
 
 				<Modal.Footer>
