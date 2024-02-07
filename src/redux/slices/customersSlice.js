@@ -21,6 +21,36 @@ export const fetchAllCustomers = createAsyncThunk(
 	}
 );
 
+export const updateCustomer = createAsyncThunk(
+	"customers/updateCustomer",
+	async (customer) => {
+		try {
+			const response = await Axios.put(
+				"CustomerManagement/Customer/Update",
+				customer
+			);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
+export const addCustomer = createAsyncThunk(
+	"customers/addCustomer",
+	async (customer) => {
+		try {
+			const response = await Axios.post(
+				"CustomerManagement/Customer/Insert",
+				customer
+			);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
 const customersSlice = createSlice({
 	name: "customers",
 	initialState,
