@@ -158,6 +158,7 @@ export default function CustomersList() {
 				handleSubmit={handleUpdateCustomer}
 				handleAddCustomer={handleNewCustomer}
 				customer={editedCustomer}
+				handleDeleteCustomer={handleDeleteCustomer}
 			/>
 		</main>
 	);

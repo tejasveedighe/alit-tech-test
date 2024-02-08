@@ -7,6 +7,7 @@ const CustomerModal = ({
 	handleSubmit,
 	customer,
 	handleAddCustomer,
+	handleDeleteCustomer,
 }) => {
 	const [customerName, setCustomerName] = useState("");
 
@@ -22,6 +23,10 @@ const CustomerModal = ({
 	const handleAddSubmit = useCallback(() => {
 		handleAddCustomer({ customerName });
 	}, [customerName, handleAddCustomer]);
+
+	const handleDeleteSubmit = useCallback(() => {
+		handleDeleteCustomer(customer.customerID);
+	}, [customer, handleDeleteCustomer]);
 
 	useLayoutEffect(() => {
 		setCustomerName(customer ? customer?.customerName : "");
@@ -58,6 +63,9 @@ const CustomerModal = ({
 						Add
 					</Button>
 				)}
+				<Button variant="danger" onClick={handleDeleteSubmit}>
+					Delete
+				</Button>
 			</Modal.Footer>
 		</Modal>
 	);
