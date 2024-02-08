@@ -51,6 +51,20 @@ export const addCustomer = createAsyncThunk(
 	}
 );
 
+export const deleteCustomer = createAsyncThunk(
+	"customers/deleteCustomer",
+	async (customerId) => {
+		try {
+			const response = await Axios.delete(
+				`CustomerManagement/Customer/Delete/${customerId}`
+			);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
 const customersSlice = createSlice({
 	name: "customers",
 	initialState,
