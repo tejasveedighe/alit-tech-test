@@ -9,9 +9,11 @@ import {
 	fetchAllCustomers,
 	updateCustomer,
 } from "../../redux/slices/customersSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function CustomersList() {
 	const tableRef = useRef();
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { customers, status, loading } = useSelector(
 		(store) => store.customers
@@ -112,6 +114,9 @@ export default function CustomersList() {
 						</DownloadTableExcel>
 						<Button variant="secondary" onClick={refreshCustomers}>
 							Refresh
+						</Button>
+						<Button variant="danger" onClick={() => navigate("/")}>
+							Exit
 						</Button>
 					</div>
 				</div>
