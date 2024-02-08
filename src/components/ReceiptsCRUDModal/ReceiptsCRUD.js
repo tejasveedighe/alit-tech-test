@@ -145,246 +145,238 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 	}, [formData, handleSave]);
 
 	return (
-		<>
-			<Modal size="lg" show={show} onHide={handleClose}>
-				<Modal.Header closeButton>
-					<Modal.Title>{receiptId ? "Edit Bill" : "Add Bill"}</Modal.Title>
-				</Modal.Header>
+		<Modal size="lg" show={show} onHide={handleClose}>
+			<Modal.Header closeButton>
+				<Modal.Title>{receiptId ? "Edit Bill" : "Add Bill"}</Modal.Title>
+			</Modal.Header>
 
-				<Modal.Body>
-					<Form className="d-flex align-items-center justify-content-between">
-						<Form.Group>
-							<Form.Label>Bill No.</Form.Label>
-							<Form.Control
-								type="text"
-								name="billNo"
-								value={formData.billNo}
-								disabled
-							/>
-						</Form.Group>
-
-						<Form.Group>
-							<Form.Label>Bill Date</Form.Label>
-							<Form.Control
-								type="date"
-								name="billDate"
-								value={formData.billDate}
-								onChange={handleChange}
-							/>
-						</Form.Group>
-					</Form>
-
+			<Modal.Body>
+				<Form className="d-flex align-items-center justify-content-between">
 					<Form.Group>
-						<Form.Label>Person Name</Form.Label>
-						<Form.Select
-							name="customerID"
-							aria-labelledby="Select Customer Name"
-							value={formData.customerID}
-							defaultValue={null}
-							required
-							onChange={handleChange}
-						>
-							{customersData?.loading ? (
-								<option disabled>Loading....</option>
-							) : customersData.status === "rejected" ? (
-								<option disabled>Failed to fetch data</option>
-							) : (
-								customersData?.customers.map((customer) => (
-									<option
-										key={customer.customerID}
-										value={customer.customerID}
-										selected={customer.customerID === formData.customerID}
-									>
-										{customer.customerName}
-									</option>
-								))
-							)}
-						</Form.Select>
-						{validationErrors.noCustomer && (
-							<div className="text-danger">Please select a customer.</div>
-						)}
+						<Form.Label>Bill No.</Form.Label>
+						<Form.Control
+							type="text"
+							name="billNo"
+							value={formData.billNo}
+							disabled
+						/>
 					</Form.Group>
 
-					<div className="mt-4">
-						<Table striped bordered hover>
-							<thead>
-								<tr>
-									<th>Sr No.</th>
-									<th>Description</th>
-									<th>Unit</th>
-									<th>Rate</th>
-									<th>Quantity</th>
-									<th>Discount Amount</th>
-									<th>Amount</th>
-									<th>Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								{formData?.billItems?.length > 0 ? (
-									formData.billItems.map((item, index) => (
-										<tr key={index}>
-											<td>{item.sNo}</td>
-											<td>
-												<Form.Control
-													type="text"
-													value={item.descr}
-													onChange={(e) =>
-														handleItemChange(index, "descr", e.target.value)
-													}
-												/>
-											</td>
-											<td>
-												<Form.Control
-													type="text"
-													required
-													value={item.unit}
-													onChange={(e) =>
-														handleItemChange(index, "unit", e.target.value)
-													}
-												/>
-												{validationErrors.noItems && (
-													<div className="text-danger">
-														Please enter a unit.
-													</div>
-												)}
-											</td>
-											<td>
-												<Form.Control
-													type="number"
-													value={item.rate}
-													required
-													onChange={(e) =>
-														handleItemChange(
-															index,
-															"rate",
-															parseFloat(e.target.value)
-														)
-													}
-												/>
-											</td>
-											<td>
-												<Form.Control
-													type="number"
-													required
-													value={item.qty}
-													onChange={(e) =>
-														handleItemChange(
-															index,
-															"qty",
-															parseFloat(e.target.value)
-														)
-													}
-												/>
-											</td>
-											<td>
-												<Form.Control
-													type="number"
-													required
-													value={item.discAmt}
-													onChange={(e) =>
-														handleItemChange(
-															index,
-															"discAmt",
-															parseFloat(e.target.value)
-														)
-													}
-												/>
-											</td>
-											<td>{item.amount}</td>
-											<td>
-												<Button
-													variant="danger"
-													size="sm"
-													onClick={() => handleDeleteItem(index)}
-												>
-													Delete
-												</Button>
-											</td>
-										</tr>
-									))
-								) : (
-									<tr>
-										<td />
-										<td />
-										<td />
-										<td />
-										<td />
-										<td />
-										<td />
-										<td className="text-center">
+					<Form.Group>
+						<Form.Label>Bill Date</Form.Label>
+						<Form.Control
+							type="date"
+							name="billDate"
+							value={formData.billDate}
+							onChange={handleChange}
+						/>
+					</Form.Group>
+				</Form>
+
+				<Form.Group>
+					<Form.Label>Person Name</Form.Label>
+					<Form.Select
+						name="customerID"
+						aria-labelledby="Select Customer Name"
+						value={formData.customerID}
+						defaultValue={null}
+						required
+						onChange={handleChange}
+					>
+						{customersData?.loading ? (
+							<option disabled>Loading....</option>
+						) : customersData.status === "rejected" ? (
+							<option disabled>Failed to fetch data</option>
+						) : (
+							customersData?.customers.map((customer) => (
+								<option
+									key={customer.customerID}
+									value={customer.customerID}
+									selected={customer.customerID === formData.customerID}
+								>
+									{customer.customerName}
+								</option>
+							))
+						)}
+					</Form.Select>
+					{validationErrors.noCustomer && (
+						<div className="text-danger">Please select a customer.</div>
+					)}
+				</Form.Group>
+
+				<div className="mt-4">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>Sr No.</th>
+								<th>Description</th>
+								<th>Unit</th>
+								<th>Rate</th>
+								<th>Quantity</th>
+								<th>Discount Amount</th>
+								<th>Amount</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{formData?.billItems?.length > 0 ? (
+								formData.billItems.map((item, index) => (
+									<tr key={index}>
+										<td>{item.sNo}</td>
+										<td>
+											<Form.Control
+												type="text"
+												value={item.descr}
+												onChange={(e) =>
+													handleItemChange(index, "descr", e.target.value)
+												}
+											/>
+										</td>
+										<td>
+											<Form.Control
+												type="text"
+												required
+												value={item.unit}
+												onChange={(e) =>
+													handleItemChange(index, "unit", e.target.value)
+												}
+											/>
+											{validationErrors.noItems && (
+												<div className="text-danger">Please enter a unit.</div>
+											)}
+										</td>
+										<td>
+											<Form.Control
+												type="number"
+												value={item.rate}
+												required
+												onChange={(e) =>
+													handleItemChange(
+														index,
+														"rate",
+														parseFloat(e.target.value)
+													)
+												}
+											/>
+										</td>
+										<td>
+											<Form.Control
+												type="number"
+												required
+												value={item.qty}
+												onChange={(e) =>
+													handleItemChange(
+														index,
+														"qty",
+														parseFloat(e.target.value)
+													)
+												}
+											/>
+										</td>
+										<td>
+											<Form.Control
+												type="number"
+												required
+												value={item.discAmt}
+												onChange={(e) =>
+													handleItemChange(
+														index,
+														"discAmt",
+														parseFloat(e.target.value)
+													)
+												}
+											/>
+										</td>
+										<td>{item.amount}</td>
+										<td>
 											<Button
-												variant="success"
+												variant="danger"
 												size="sm"
-												onClick={handleAddItem}
+												onClick={() => handleDeleteItem(index)}
 											>
-												Insert
+												Delete
 											</Button>
 										</td>
 									</tr>
-								)}
-							</tbody>
-						</Table>
-						{validationErrors.noItems && (
-							<div className="text-danger">Please add at least one item.</div>
-						)}
-					</div>
+								))
+							) : (
+								<tr>
+									<td />
+									<td />
+									<td />
+									<td />
+									<td />
+									<td />
+									<td />
+									<td className="text-center">
+										<Button variant="success" size="sm" onClick={handleAddItem}>
+											Insert
+										</Button>
+									</td>
+								</tr>
+							)}
+						</tbody>
+					</Table>
+					{validationErrors.noItems && (
+						<div className="text-danger">Please add at least one item.</div>
+					)}
+				</div>
 
-					<div className="d-flex">
+				<div className="d-flex">
+					<Form.Group>
+						<Form.Control
+							as="textarea"
+							rows={10}
+							cols={70}
+							value={formData.remarks}
+							onChange={handleChange}
+							name="remarks"
+						/>
+					</Form.Group>
+					<div>
 						<Form.Group>
+							<Form.Label>Total Amount</Form.Label>
 							<Form.Control
-								as="textarea"
-								rows={10}
-								cols={70}
-								value={formData.remarks}
-								onChange={handleChange}
-								name="remarks"
+								type="number"
+								disabled
+								name="totalAmount"
+								value={calculateTotalAmount}
 							/>
 						</Form.Group>
-						<div>
-							<Form.Group>
-								<Form.Label>Total Amount</Form.Label>
-								<Form.Control
-									type="number"
-									disabled
-									name="totalAmount"
-									value={calculateTotalAmount}
-								/>
-							</Form.Group>
-							<Form.Group>
-								<Form.Label>Discount</Form.Label>
-								<Form.Control
-									type="number"
-									disabled
-									name="totalDiscountAmount"
-									value={formData.totalDiscountAmount}
-								/>
-							</Form.Group>
-							<Form.Group>
-								<Form.Label>Net Amount</Form.Label>
-								<Form.Control
-									type="number"
-									disabled
-									name="netAmount"
-									value={formData.netAmount}
-									onChange={handleChange}
-								/>
-							</Form.Group>
-						</div>
+						<Form.Group>
+							<Form.Label>Discount</Form.Label>
+							<Form.Control
+								type="number"
+								disabled
+								name="totalDiscountAmount"
+								value={formData.totalDiscountAmount}
+							/>
+						</Form.Group>
+						<Form.Group>
+							<Form.Label>Net Amount</Form.Label>
+							<Form.Control
+								type="number"
+								disabled
+								name="netAmount"
+								value={formData.netAmount}
+								onChange={handleChange}
+							/>
+						</Form.Group>
 					</div>
-				</Modal.Body>
+				</div>
+			</Modal.Body>
 
-				<Modal.Footer>
-					<Button variant="secondary" onClick={handleClose}>
-						Cancel
+			<Modal.Footer>
+				<Button variant="secondary" onClick={handleClose}>
+					Cancel
+				</Button>
+				{!receiptLoading && (
+					<Button type="submit" variant="primary" onClick={handleSaveBill}>
+						Save
 					</Button>
-					{!receiptLoading && (
-						<Button type="submit" variant="primary" onClick={handleSaveBill}>
-							Save
-						</Button>
-					)}
-				</Modal.Footer>
-			</Modal>
-		</>
+				)}
+			</Modal.Footer>
+		</Modal>
 	);
 };
 

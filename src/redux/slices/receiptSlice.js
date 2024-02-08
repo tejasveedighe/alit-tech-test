@@ -71,6 +71,18 @@ export const generateBillNo = createAsyncThunk(
 	}
 );
 
+export const deleteBill = createAsyncThunk(
+	"receipts/deleteBill",
+	async (id) => {
+		try {
+			const response = await Axios.delete(`BillManagement/Bill/Delete/${id}`);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
 const receiptSlice = createSlice({
 	name: "receipts",
 	initialState,

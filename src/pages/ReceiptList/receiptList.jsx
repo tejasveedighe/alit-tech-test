@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ReceiptCRUD from "../../components/ReceiptsCRUDModal/ReceiptsCRUD";
 import {
 	addNewReceipt,
+	deleteBill,
 	fetchReceipts,
 	generateBillNo,
 	updateReceipt,
@@ -18,21 +19,33 @@ const ReceiptList = () => {
 	const tableRef = useRef();
 	const [selectedReceiptId, setSelectedReceiptId] = useState(null);
 
-	const addReceipt = () => {
+	const addReceipt = useCallback(() => {
 		setSelectedReceiptId(null);
 		setShow(true);
-	};
+	}, []);
 
-	const editReceipt = (id) => {
+	const editReceipt = useCallback((id) => {
 		setSelectedReceiptId(id);
 		setShow(true);
-	};
-
-	const deleteReceipt = (id) => {};
+	}, []);
 
 	const refreshReceipts = useCallback(() => {
 		dispatch(fetchReceipts());
 	}, [dispatch]);
+
+	const deleteReceipt = useCallback(
+		(id) => {
+			dispatch(deleteBill(id))
+				.then(() => {
+					alert("Delete Bill Successful");
+					refreshReceipts();
+				})
+				.catch((err) => {
+					alert(err.message);
+				});
+		},
+		[dispatch, refreshReceipts]
+	);
 
 	const [show, setShow] = useState(false);
 
@@ -133,7 +146,7 @@ const ReceiptList = () => {
 										<Button
 											variant="danger"
 											size="sm"
-											onClick={() => deleteReceipt(receipt.id)}
+											onClick={() => deleteReceipt(receipt.billID)}
 										>
 											Delete
 										</Button>
