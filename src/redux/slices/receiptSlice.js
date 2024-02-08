@@ -35,12 +35,27 @@ export const getReceiptById = createAsyncThunk(
 	}
 );
 
+export const updateReceipt = createAsyncThunk(
+	"receipts/updateReceipt",
+	async (payload) => {
+		try {
+			const response = await Axios.put("BillManagement/Bill/Update", payload);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
 const receiptSlice = createSlice({
 	name: "receipts",
 	initialState,
 	reducers: {
 		setReceipts: (state, action) => {
 			state.receipts = action.payload;
+		},
+		setReceipt: (state, action) => {
+			state.receipt = action.payload;
 		},
 	},
 	extraReducers(builder) {
@@ -79,4 +94,5 @@ const receiptSlice = createSlice({
 	},
 });
 
+export const { setReceipt, setReceipts } = receiptSlice.actions;
 export default receiptSlice.reducer;

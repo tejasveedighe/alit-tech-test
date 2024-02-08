@@ -3,8 +3,8 @@ import { Button, Table } from "react-bootstrap";
 import { DownloadTableExcel } from "react-export-table-to-excel";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchReceipts, getReceiptById } from "../../redux/slices/receiptSlice";
 import ReceiptCRUD from "../../components/ReceiptsCRUDModal/ReceiptsCRUD";
+import { fetchReceipts, updateReceipt } from "../../redux/slices/receiptSlice";
 
 const ReceiptList = () => {
 	const navigate = useNavigate();
@@ -12,10 +12,6 @@ const ReceiptList = () => {
 	const { status, loading, receipts } = useSelector((store) => store.receipts);
 	const tableRef = useRef();
 	const [selectedReceiptId, setSelectedReceiptId] = useState(null);
-
-	useEffect(() => {
-		dispatch(fetchReceipts());
-	}, []);
 
 	const addReceipt = () => {
 		setSelectedReceiptId(null);
@@ -34,6 +30,27 @@ const ReceiptList = () => {
 	}, [dispatch]);
 
 	const [show, setShow] = useState(false);
+
+	useEffect(() => {
+		refreshReceipts();
+	}, []);
+
+	const handleClose = useCallback(() => setShow(false), []);
+
+	const handleSave = useCallback(
+		(formData) => {
+			dispatch(updateReceipt(formData))
+				.then(() => {
+					alert("Bill Updated Successfully");
+				})
+				.then(() => handleClose())
+				.catch((err) => {
+					alert(err.message);
+					handleClose();
+				});
+		},
+		[dispatch, handleClose]
+	);
 
 	if (loading) return <div>Loading...</div>;
 
@@ -108,7 +125,8 @@ const ReceiptList = () => {
 			<ReceiptCRUD
 				receiptId={selectedReceiptId}
 				show={show}
-				setShow={setShow}
+				handleSave={handleSave}
+				handleClose={handleClose}
 			/>
 		</>
 	);
