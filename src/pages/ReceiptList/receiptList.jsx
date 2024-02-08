@@ -4,7 +4,12 @@ import { DownloadTableExcel } from "react-export-table-to-excel";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ReceiptCRUD from "../../components/ReceiptsCRUDModal/ReceiptsCRUD";
-import { fetchReceipts, updateReceipt } from "../../redux/slices/receiptSlice";
+import {
+	addNewReceipt,
+	fetchReceipts,
+	generateBillNo,
+	updateReceipt,
+} from "../../redux/slices/receiptSlice";
 
 const ReceiptList = () => {
 	const navigate = useNavigate();
@@ -39,15 +44,34 @@ const ReceiptList = () => {
 
 	const handleSave = useCallback(
 		(formData) => {
-			dispatch(updateReceipt(formData))
-				.then(() => {
-					alert("Bill Updated Successfully");
-				})
-				.then(() => handleClose())
-				.catch((err) => {
-					alert(err.message);
-					handleClose();
+			if (!formData.billNo) {
+				dispatch(generateBillNo()).then((res) => {
+					const newFormData = {
+						...formData,
+						billNo: res.payload,
+					};
+					dispatch(addNewReceipt(newFormData))
+						.then(() => {
+							alert("New Bill Added");
+							handleClose();
+							refreshReceipts();
+						})
+						.catch((err) => {
+							alert(err.message);
+							handleClose();
+						});
 				});
+			} else {
+				dispatch(updateReceipt(formData))
+					.then(() => {
+						alert("Bill Updated Successfully");
+					})
+					.then(() => handleClose())
+					.catch((err) => {
+						alert(err.message);
+						handleClose();
+					});
+			}
 		},
 		[dispatch, handleClose]
 	);

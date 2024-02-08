@@ -47,6 +47,30 @@ export const updateReceipt = createAsyncThunk(
 	}
 );
 
+export const addNewReceipt = createAsyncThunk(
+	"receipts/addReceipt",
+	async (payload) => {
+		try {
+			const response = await Axios.post("BillManagement/Bill/Insert", payload);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
+export const generateBillNo = createAsyncThunk(
+	"receipts/generateBillNo",
+	async () => {
+		try {
+			const response = await Axios.get("BillManagement/Bill/GenerateBillNo");
+			return response.data;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+);
+
 const receiptSlice = createSlice({
 	name: "receipts",
 	initialState,

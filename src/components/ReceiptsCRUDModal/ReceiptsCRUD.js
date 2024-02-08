@@ -6,7 +6,7 @@ import { getReceiptById, setReceipt } from "../../redux/slices/receiptSlice";
 
 function initState() {
 	return {
-		billNo: "",
+		billNo: null,
 		billDate: new Date().toISOString().substr(0, 10),
 		customerID: null,
 		netAmount: 0,
@@ -19,6 +19,10 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 	const dispatch = useDispatch();
 
 	const [formData, setFormData] = useState(initState);
+	const [validationErrors, setValidationErrors] = useState({
+		noItems: false,
+		noCustomer: false,
+	});
 
 	const { receiptLoading, receipt, status } = useSelector(
 		(store) => store.receipts
@@ -53,6 +57,17 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 			],
 		});
 	}, [formData]);
+
+	const handleDeleteItem = useCallback(
+		(index) => {
+			const updatedItems = formData.billItems.filter((item, i) => i !== index);
+			setFormData({
+				...formData,
+				billItems: updatedItems,
+			});
+		},
+		[formData]
+	);
 
 	const handleItemChange = useCallback(
 		(index, field, value) => {
@@ -101,13 +116,34 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 
 	useEffect(() => {
 		if (receipt && !receiptLoading && status === "fulfilled") {
-			setFormData({ ...receipt });
+			setFormData({
+				...receipt,
+			});
 		}
 	}, [receipt, receiptLoading, status]);
 
 	useEffect(() => {
 		return () => dispatch(setReceipt({}));
 	}, [dispatch]);
+
+	const handleSaveBill = useCallback(() => {
+		const { billItems, customerID } = formData;
+		const errors = {
+			noItems: billItems.length === 0,
+			noCustomer: !customerID,
+		};
+
+		setValidationErrors(errors);
+
+		// Check if there are any validation errors
+		if (Object.values(errors).some((error) => error)) {
+			return;
+		}
+
+		// Proceed with saving
+		handleSave(formData);
+	}, [formData, handleSave]);
+
 	return (
 		<>
 			<Modal size="lg" show={show} onHide={handleClose}>
@@ -116,15 +152,14 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 				</Modal.Header>
 
 				<Modal.Body>
-					<div className="d-flex align-items-center justify-content-between">
+					<Form className="d-flex align-items-center justify-content-between">
 						<Form.Group>
 							<Form.Label>Bill No.</Form.Label>
 							<Form.Control
 								type="text"
 								name="billNo"
 								value={formData.billNo}
-								onChange={handleChange}
-								disabled={receipt ? true : false}
+								disabled
 							/>
 						</Form.Group>
 
@@ -137,7 +172,7 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 								onChange={handleChange}
 							/>
 						</Form.Group>
-					</div>
+					</Form>
 
 					<Form.Group>
 						<Form.Label>Person Name</Form.Label>
@@ -146,6 +181,7 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 							aria-labelledby="Select Customer Name"
 							value={formData.customerID}
 							defaultValue={null}
+							required
 							onChange={handleChange}
 						>
 							{customersData?.loading ? (
@@ -164,6 +200,9 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 								))
 							)}
 						</Form.Select>
+						{validationErrors.noCustomer && (
+							<div className="text-danger">Please select a customer.</div>
+						)}
 					</Form.Group>
 
 					<div className="mt-4">
@@ -181,68 +220,98 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 								</tr>
 							</thead>
 							<tbody>
-								{formData?.billItems?.map((item, index) => (
-									<tr key={index}>
-										<td>{item.sNo}</td>
-										<td>
-											<Form.Control
-												type="text"
-												value={item.descr}
-												onChange={(e) =>
-													handleItemChange(index, "descr", e.target.value)
-												}
-											/>
-										</td>
-										<td>
-											<Form.Control
-												type="text"
-												value={item.unit}
-												onChange={(e) =>
-													handleItemChange(index, "unit", e.target.value)
-												}
-											/>
-										</td>
-										<td>
-											<Form.Control
-												type="number"
-												value={item.rate}
-												onChange={(e) =>
-													handleItemChange(
-														index,
-														"rate",
-														parseFloat(e.target.value)
-													)
-												}
-											/>
-										</td>
-										<td>
-											<Form.Control
-												type="number"
-												value={item.qty}
-												onChange={(e) =>
-													handleItemChange(
-														index,
-														"qty",
-														parseFloat(e.target.value)
-													)
-												}
-											/>
-										</td>
-										<td>
-											<Form.Control
-												type="number"
-												value={item.discAmt}
-												onChange={(e) =>
-													handleItemChange(
-														index,
-														"discAmt",
-														parseFloat(e.target.value)
-													)
-												}
-											/>
-										</td>
-										<td>{item.amount}</td>
-										<td>
+								{formData?.billItems?.length > 0 ? (
+									formData.billItems.map((item, index) => (
+										<tr key={index}>
+											<td>{item.sNo}</td>
+											<td>
+												<Form.Control
+													type="text"
+													value={item.descr}
+													onChange={(e) =>
+														handleItemChange(index, "descr", e.target.value)
+													}
+												/>
+											</td>
+											<td>
+												<Form.Control
+													type="text"
+													required
+													value={item.unit}
+													onChange={(e) =>
+														handleItemChange(index, "unit", e.target.value)
+													}
+												/>
+												{validationErrors.noItems && (
+													<div className="text-danger">
+														Please enter a unit.
+													</div>
+												)}
+											</td>
+											<td>
+												<Form.Control
+													type="number"
+													value={item.rate}
+													required
+													onChange={(e) =>
+														handleItemChange(
+															index,
+															"rate",
+															parseFloat(e.target.value)
+														)
+													}
+												/>
+											</td>
+											<td>
+												<Form.Control
+													type="number"
+													required
+													value={item.qty}
+													onChange={(e) =>
+														handleItemChange(
+															index,
+															"qty",
+															parseFloat(e.target.value)
+														)
+													}
+												/>
+											</td>
+											<td>
+												<Form.Control
+													type="number"
+													required
+													value={item.discAmt}
+													onChange={(e) =>
+														handleItemChange(
+															index,
+															"discAmt",
+															parseFloat(e.target.value)
+														)
+													}
+												/>
+											</td>
+											<td>{item.amount}</td>
+											<td>
+												<Button
+													variant="danger"
+													size="sm"
+													onClick={() => handleDeleteItem(index)}
+												>
+													Delete
+												</Button>
+											</td>
+										</tr>
+									))
+								) : (
+									<tr>
+										<td />
+										<td />
+										<td />
+										<td />
+										<td />
+										<td />
+										<td />
+										<td className="text-center">
 											<Button
 												variant="success"
 												size="sm"
@@ -250,14 +319,14 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 											>
 												Insert
 											</Button>
-											<Button variant="danger" size="sm">
-												Delete
-											</Button>
 										</td>
 									</tr>
-								))}
+								)}
 							</tbody>
 						</Table>
+						{validationErrors.noItems && (
+							<div className="text-danger">Please add at least one item.</div>
+						)}
 					</div>
 
 					<div className="d-flex">
@@ -309,7 +378,7 @@ const ReceiptCRUD = ({ receiptId, show, handleClose, handleSave }) => {
 						Cancel
 					</Button>
 					{!receiptLoading && (
-						<Button variant="primary" onClick={handleSave}>
+						<Button type="submit" variant="primary" onClick={handleSaveBill}>
 							Save
 						</Button>
 					)}
